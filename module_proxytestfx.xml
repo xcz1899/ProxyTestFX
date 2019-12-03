@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_proxytestfx" default="compile.module.proxytestfx">
+  <dirname property="module.proxytestfx.basedir" file="${ant.file.module_proxytestfx}"/>
+  
+  <property name="module.jdk.home.proxytestfx" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.proxytestfx" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.proxytestfx" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.proxytestfx" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="proxytestfx.output.dir" value="${module.proxytestfx.basedir}/out/production/ProxyTestFX"/>
+  <property name="proxytestfx.testoutput.dir" value="${module.proxytestfx.basedir}/out/test/ProxyTestFX"/>
+  
+  <path id="proxytestfx.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="proxytestfx.module.production.classpath">
+    <path refid="${module.jdk.classpath.proxytestfx}"/>
+  </path>
+  
+  <path id="proxytestfx.runtime.production.module.classpath">
+    <pathelement location="${proxytestfx.output.dir}"/>
+  </path>
+  
+  <path id="proxytestfx.module.classpath">
+    <path refid="${module.jdk.classpath.proxytestfx}"/>
+    <pathelement location="${proxytestfx.output.dir}"/>
+  </path>
+  
+  <path id="proxytestfx.runtime.module.classpath">
+    <pathelement location="${proxytestfx.testoutput.dir}"/>
+    <pathelement location="${proxytestfx.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.proxytestfx">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.proxytestfx">
+    <patternset refid="excluded.from.module.proxytestfx"/>
+  </patternset>
+  
+  <path id="proxytestfx.module.sourcepath">
+    <dirset dir="${module.proxytestfx.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.proxytestfx" depends="compile.module.proxytestfx.production,compile.module.proxytestfx.tests" description="Compile module ProxyTestFX"/>
+  
+  <target name="compile.module.proxytestfx.production" depends="register.custom.compilers" description="Compile module ProxyTestFX; production classes">
+    <mkdir dir="${proxytestfx.output.dir}"/>
+    <javac2 destdir="${proxytestfx.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.proxytestfx}/javac">
+      <compilerarg line="${compiler.args.proxytestfx}"/>
+      <bootclasspath refid="proxytestfx.module.bootclasspath"/>
+      <classpath refid="proxytestfx.module.production.classpath"/>
+      <src refid="proxytestfx.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.proxytestfx"/>
+    </javac2>
+    
+    <copy todir="${proxytestfx.output.dir}">
+      <fileset dir="${module.proxytestfx.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.proxytestfx.tests" depends="register.custom.compilers,compile.module.proxytestfx.production" description="compile module ProxyTestFX; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.proxytestfx" description="cleanup module">
+    <delete dir="${proxytestfx.output.dir}"/>
+    <delete dir="${proxytestfx.testoutput.dir}"/>
+  </target>
+</project>
